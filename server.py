@@ -1,6 +1,7 @@
 from flask import Flask, request
 import datetime
 import requests
+import os
 
 app = Flask(__name__)
 
@@ -12,6 +13,7 @@ ATIVACOES_LOG = "ativacoes.txt"
 # ==========================================================
 def enviar_telegram(mensagem: str):
     token = "8500460958:AAGdLhco3b2K3Pl0Ia8cdw1FdMWXgt5H9fc"
+
     chat_ids = [
         "6503215200",   # você
         "6497450238"    # outra pessoa
@@ -19,15 +21,17 @@ def enviar_telegram(mensagem: str):
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
-    data = {
-        "chat_id": chat_id,
-        "text": mensagem
-    }
+    for cid in chat_ids:
+        data = {
+            "chat_id": cid,
+            "text": mensagem
+        }
 
-    try:
-        requests.post(url, data=data, timeout=10)
-    except Exception as e:
-        print("Erro ao enviar mensagem:", e)
+        try:
+            requests.post(url, data=data, timeout=10)
+            print(f"Mensagem enviada para {cid}")
+        except Exception as e:
+            print(f"Erro ao enviar mensagem para {cid}:", e)
 
 
 # ==========================================================
@@ -43,12 +47,29 @@ def ativar():
     if not codigo:
         return "Código não enviado", 400
 
-    # Registro em arquivo
+    # -------------------------------
+    # VERIFICAR SE JÁ FOI USADO
+    # -------------------------------
+    codigo_ja_usado = False
+    if os.path.exists(ATIVACOES_LOG):
+        with open(ATIVACOES_LOG, "r", encoding="utf-8") as f:
+            conteudo = f.read()
+            if codigo in conteudo:
+                codigo_ja_usado = True
+
+    # -------------------------------
+    # REGISTRAR ATIVAÇÃO
+    # -------------------------------
     with open(ATIVACOES_LOG, "a", encoding="utf-8") as f:
         f.write(f"{momento} | Código: {codigo} | IP: {ip} | SO: {so}\n")
 
-    # Enviar mensagem para o Telegram
-    enviar_telegram(f"Novo código ativado: {codigo}")
+    # -------------------------------
+    # ENVIAR MENSAGEM PARA TELEGRAM
+    # -------------------------------
+    if codigo_ja_usado:
+        enviar_telegram(f"⚠ ALERTA: O código {codigo} foi usado novamente!")
+    else:
+        enviar_telegram(f"Novo código ativado: {codigo}")
 
     return f"Código {codigo} registrado com sucesso!"
 
