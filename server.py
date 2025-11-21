@@ -12,8 +12,10 @@ ATIVACOES_LOG = "ativacoes.txt"
 # ==========================================================
 def enviar_telegram(mensagem: str):
     token = "8500460958:AAGdLhco3b2K3Pl0Ia8cdw1FdMWXgt5H9fc"
-    chat_id = "6503215200"
-    chat_id = "6497450238"
+    chat_ids = [
+        "6503215200",   # você
+        "6497450238"    # outra pessoa
+    ]
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
