@@ -12,6 +12,7 @@ ATIVACOES_LOG = "ativacoes.txt"
 # ==========================================================
 def enviar_telegram(mensagem: str):
     token = "8500460958:AAGdLhco3b2K3Pl0Ia8cdw1FdMWXgt5H9fc"
+
     chat_ids = [
         "6503215200",   # você
         "6497450238"    # outra pessoa
@@ -19,15 +20,17 @@ def enviar_telegram(mensagem: str):
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
-    data = {
-        "chat_id": chat_id,
-        "text": mensagem
-    }
+    for cid in chat_ids:
+        data = {
+            "chat_id": cid,
+            "text": mensagem
+        }
 
-    try:
-        requests.post(url, data=data, timeout=10)
-    except Exception as e:
-        print("Erro ao enviar mensagem:", e)
+        try:
+            requests.post(url, data=data, timeout=10)
+            print(f"Mensagem enviada para {cid}")
+        except Exception as e:
+            print(f"Erro ao enviar mensagem para {cid}:", e)
 
 
 # ==========================================================
