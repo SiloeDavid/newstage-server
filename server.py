@@ -14,7 +14,7 @@ def enviar_telegram(mensagem: str):
     token = "8500460958:AAGdLhco3b2K3Pl0Ia8cdw1FdMWXgt5H9fc"
     chat_ids = [
     "6497450238",   
-    "1763736530"   
+    "6503215200"   
 ]
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
